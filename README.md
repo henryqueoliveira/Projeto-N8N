@@ -6,16 +6,21 @@ Este repositório é o centro técnico da minha jornada de desenvolvimento e des
 
 ## 🎯 Objetivo do Projeto
 
-O objetivo principal desta jornada é demonstrar e implementar automações complexas e de alto impacto, utilizando a flexibilidade das APIs REST do Protheus e a capacidade de orquestração visual do n8n. A meta é ir além das integrações básicas, criando fluxos de trabalho que transformem o Protheus de um sistema de registro passivo em um sistema de ação proativo.
+O objetivo principal desta jornada é demonstrar e implementar automações de alto impacto, utilizando a flexibilidade das APIs REST do Protheus e a capacidade de orquestração visual do n8n. A meta é ir além das integrações básicas, criando fluxos de trabalho que transformem o Protheus de um sistema de registro passivo em um sistema de ação proativo.
 
 ---
 
-## ✅ Status Atual: Primeira Conexão Estabelecida!
+## ✅ Status Atual: Marco 1 - Primeira versão da API pronta!
 
-O marco inicial desta jornada foi alcançado com sucesso! A comunicação entre o Protheus e o n8n foi validada.
+**A primeira versão (v1.0) da API de automação de Notas Fiscais está finalizada e o código-fonte ADVPL já está disponível neste repositório!**
 
-* **API de Teste (Protheus - ADVPL):** Desenvolvi uma API REST em ADVPL focada em operações CRUD (Criar, Ler, Atualizar, Deletar) de produtos. Esta API serviu como a prova de conceito fundamental para a troca de dados bidirecional.
-* **Ambiente n8n (Local):** Configurei e executei workflows no n8n localmente, utilizando Node.js, para consumir e interagir com a API do Protheus, validando a fluidez da comunicação.
+Este não é mais um teste de conceito; é o coração da nossa automação. A API é responsável por:
+
+- **Receber** uma requisição para faturar um Pedido de Venda específico.
+- **Orquestrar** internamente a geração do Documento de Saída no Protheus.
+
+
+A comunicação com o n8n foi um sucesso, validando que o "cérebro" (Protheus) e o "maestro" (n8n) da nossa automação conseguem conversar perfeitamente para executar a tarefa mais crítica do processo.
 
 ---
 
@@ -30,9 +35,19 @@ O marco inicial desta jornada foi alcançado com sucesso! A comunicação entre 
 
 ---
 
-## 🗺️ Próximos Passos (Spoiler do Próximo Desafio)
+## 🗺️ Próximos Passos: Construindo o Maestro da Automação (Workflow n8n)
 
-Com a base de comunicação estabelecida, o próximo grande desafio é aplicar esse conhecimento em uma automação de alto impacto. Fique ligado nas próximas atualizações para descobrir qual processo será o foco da nossa próxima fase!
+Com a API pronta e funcional, o foco agora é 100% no desenvolvimento do fluxo de orquestração ponta-a-ponta no **n8n**. O plano de desenvolvimento para o workflow inclui:
+
+-   **[ ] Gatilho Inteligente:** Criar um agendador que busca periodicamente no Protheus por Pedidos de Venda que estão liberados e prontos para faturar.
+-   **[ ] Chamada da API:** Para cada pedido encontrado, acionar a API de faturamento que acabamos de desenvolver.
+-   **[ ] Loop de Polling Assíncrono:** Implementar a lógica para consultar o status da NF-e, aguardando a resposta de "Autorizada" ou "Rejeitada".
+-   **[ ] Tratamento de Sucesso e Falha:**
+    -   Se **autorizada**, prosseguir para a próxima etapa.
+    -   Se **rejeitada**, capturar o motivo do erro e notificar a equipe responsável.
+-   **[ ] Distribuição Final:** Após a autorização, usar a API do TSS para obter o XML e o DANFE, e então enviar os arquivos por e-mail para o cliente.
+
+O desafio agora é construir um fluxo robusto, resiliente e que lide com todas as variáveis do mundo real.
 
 ---
 
@@ -41,12 +56,12 @@ Com a base de comunicação estabelecida, o próximo grande desafio é aplicar e
 Esta é uma jornada de aprendizado e colaboração! Suas ideias e feedback são muito bem-vindos.
 
 * **Acompanhe no LinkedIn:** Siga a série de posts **#JornadaProtheusN8N** no meu perfil para atualizações semanais, desafios e insights.
-* **Sugestões e Ideias:** Sinta-se à vontade para abrir uma [Issue](https://github.com/SEU_USERNAME/SEU_REPOSITORIO/issues) neste repositório ou comentar nos posts do LinkedIn com suas sugestões para automações ou soluções para os desafios que surgirem.
+* **Sugestões e Ideias:** Sinta-se à vontade para abrir uma [Issue](https://github.com/henryqueoliveira/Projeto-N8N/issues) neste repositório ou comentar nos posts do LinkedIn com suas sugestões para automações ou soluções para os desafios que surgirem.
 * **Compartilhe:** Se você achou esta iniciativa interessante, compartilhe com sua rede!
 
 ---
 
 ## 🔗 Meus Outros Projetos e Perfil
 
-* [Perfil no GitHub](https://github.com/SEU_USERNAME)
+* [Perfil no GitHub](https://github.com/henryqueoliveira)
 * [Perfil no LinkedIn](https://www.linkedin.com/in/henryque-marques-de-oliveira)
