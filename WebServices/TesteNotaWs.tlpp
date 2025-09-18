@@ -1,0 +1,85 @@
+//Bibliotecas 
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+#include "Topconn.ch"
+
+namespace wsnotafiscal
+
+/*/{Protheus.doc} User Function TesteNotaWs
+apenas um teste - Busca de apenas 1 registro
+@author Henryque Oliveira
+@since 10/09/2025
+@version 1.0
+@type User Function
+@obs Parâmetros a receber na requisição:
+    id = Código do Registro na Tabela
+/*/
+@get('TesteNotaWs/api/NFs/') 
+user function TesteNotaWs()
+
+    local cAlias    := 'SF2'              as Character
+    local aArea     := GetArea()
+    local oJson     := JsonObject():new() as Json
+    local aNota     := {}
+    local lRet      := .T.
+    jQueryString    := oRest:getQueryRequest()
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Busca a nota coletando o "id"(numero da nota) se for nulo ou não existir apresenta mensagem de erro ///////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    If oJson !=	Nil .and. ! Empty(jQueryString:GetJsonObject('nota'))
+
+        DbSelectArea(cAlias)
+        cAlias->(DbSetOrder(1))
+
+        //Se não encontrar o registro
+        If cAlias->(DbSeek(xFilial("cAlias")+jQueryString:GetJsonObject('nota')))
+
+            oRest:SetStatusCode(500)
+            
+            oJson['errorID']    := 'E401'
+            oJson['error']      := 'could not find an invoice.'
+            oJson['solution']   := 'could not find invoice in'+ cAlias +',search other invoice '
+
+            lRet := .F.
+            Return(lRet)
+
+        else    
+            //Define o retorno
+            aAdd(aNota,JsonObject():new())
+                aNota[1]['Numero da nota']  := AllTrim(cAlias->F2_DOC)
+                aNota[1]['Cliente']         := AllTrim(cAlias->F2_CLIENTE)
+                aNota[1]['Serie']           := AllTrim(cAlias->F2-SERIE)
+                aNota[1]['Loja']            := AllTrim(cAlias->F2_LOJA)
+
+
+                oJson['Notas Fiscais'] := aNota
+
+               cjson := FWJsonSerialize(oJson) 
+               ::setresponse(cjson)
+
+               return(.T.)
+         
+        endif
+    
+    
+
+        cAlias->(DbCloseArea())
+        RestArea(aArea)
+        FreeObj(oJson)
+
+    //Do contrário, irá retornar uma mensagem que não foi encontrado    
+    Else
+        oRest:SetStatusCode(500)
+        oJson['errorID']    := 'E400'
+        oJson['error']      := 'Empty ID.'
+        oJson['solution']   := 'Enter the ID '
+    EndIf
+
+return 
+
+
+
+
