@@ -14,71 +14,50 @@ apenas um teste - Busca de apenas 1 registro
 @obs Parâmetros a receber na requisição:
     id = Código do Registro na Tabela
 /*/
-@get('TesteNotaWs/api/NFs/') 
-user function TesteNotaWs()
+@get('TesteNotaWs/get/id/') 
+User Function TesteNotaWs()
+    Local jResponse := JsonObject():New() As Json
+    Local jPath                           As Json
+    Local cAliasWS  := 'SF2'              As Character
 
-    local cAlias    := 'SF2'              as Character
-    local aArea     := GetArea()
-    local oJson     := JsonObject():new() as Json
-    local aNota     := {}
-    local lRet      := .T.
-    jQueryString    := oRest:getQueryRequest()
-
-
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Busca a nota coletando o "id"(numero da nota) se for nulo ou não existir apresenta mensagem de erro ///////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    If oJson !=	Nil .and. ! Empty(jQueryString:GetJsonObject('nota'))
-
-        DbSelectArea(cAlias)
-        cAlias->(DbSetOrder(1))
-
+    //Busca os dados que o usuário informou
+    jPath := JsonObject():New()
+    jPath := oRest:getQueryRequest()
+  
+    //Caso haja conteúdo e não esteja vazio o ID
+    If jPath != Nil .And. ! Empty(jPath:GetJsonObject('id'))
+  
+        DbSelectArea(cAliasWS)
+        (cAliasWS)->(DbSetOrder(1))
+  
         //Se não encontrar o registro
-        If cAlias->(DbSeek(xFilial("cAlias")+jQueryString:GetJsonObject('nota')))
-
-            oRest:SetStatusCode(500)
-            
-            oJson['errorID']    := 'E401'
-            oJson['error']      := 'could not find an invoice.'
-            oJson['solution']   := 'could not find invoice in'+ cAlias +',search other invoice '
-
-            lRet := .F.
-            Return(lRet)
-
-        else    
+        If ! (cAliasWS)->(MsSeek(FWxFilial(cAliasWS) + jPath:GetJsonObject('id') ))
+            oRest:setStatusCode(500)
+            jResponse['errorId']  := 'E401'
+            jResponse['error']    := 'could not find an invoice.'
+            jResponse['solution'] := 'could not find invoice in'+ cAliasWS +',search other invoice '
+  
+        //Define o retorno
+        Else
             //Define o retorno
-            aAdd(aNota,JsonObject():new())
-                aNota[1]['Numero da nota']  := AllTrim(cAlias->F2_DOC)
-                aNota[1]['Cliente']         := AllTrim(cAlias->F2_CLIENTE)
-                aNota[1]['Serie']           := AllTrim(cAlias->F2-SERIE)
-                aNota[1]['Loja']            := AllTrim(cAlias->F2_LOJA)
-
-
-                oJson['Notas Fiscais'] := aNota
-
-               cjson := FWJsonSerialize(oJson) 
-               ::setresponse(cjson)
-
-               return(.T.)
-         
-        endif
-    
-    
-
-        cAlias->(DbCloseArea())
-        RestArea(aArea)
-        FreeObj(oJson)
-
-    //Do contrário, irá retornar uma mensagem que não foi encontrado    
+            jResponse['doc'] := (cAliasWS)->F2_DOC 
+            jResponse['cliente'] := (cAliasWS)->F2_CLIENTE 
+            jResponse['loja'] := (cAliasWS)->F2_LOJA 
+            jResponse['serie'] := (cAliasWS)->F2_SERIE 
+        EndIf
+  
+    //Do contrário, irá retornar uma mensagem que não foi encontrado
     Else
-        oRest:SetStatusCode(500)
-        oJson['errorID']    := 'E400'
-        oJson['error']      := 'Empty ID.'
-        oJson['solution']   := 'Enter the ID '
+        oRest:setStatusCode(500)
+        jResponse['errorId']  := 'E400'
+        jResponse['error']    := 'Empty ID'
+        jResponse['solution'] := 'Enter the ID'
     EndIf
-
-return 
+  
+    //Encerra retornando o JSON
+    oRest:setKeyHeaderResponse('Content-Type','application/json')
+    oRest:setResponse(jResponse:toJSON())
+Return
 
 
 
